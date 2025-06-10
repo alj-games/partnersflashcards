@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Federo&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Partners Flashcards</title>
+    <meta name="description" content="Flashcard app for learning partner companies and services">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiUGFydG5lcnMgRmxhc2hjYXJkcyIsInNob3J0X25hbWUiOiJQYXJ0bmVycyIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjNDI5OGZmIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjRiV3h1Y3owbmFIUjBjRG92TDNkM2R5NTNNeTV2Y21jdk1qQXdNQzl6ZG1jbklIWnBaWGRDYjNnOUp6QWdNQ0F4TURBZ01UQXdKeUJ6YVdwbFBTZHNNV2d6SUdZeU56STZRU0k+UEhKbFkzUWdlRDBuTVNBbklIbDBTRDBuTVMxd2JtbHNMQ0l6TUZsUmJHOWpkVnBhT2tzPSIsImVtcHR5Ijp0cnVlLCJzdXJyb3VuZGluZ1JlYWx0eSI6IjE5LmpwZyIsImFwcGxpY2F0aW9uLWNzcyI6InVybCgiLCAiaHR0cHM6Ly9kZXZlbG9wZXJzLmdvb2dsZS5jb20vc2VydmljZS13b3JrZXIvc3JjL2luZGV4LmpzLmZpbGU6Ikg0c2lBQUFBQUFBQUFCQUFBQUVBQWRvVUFNQUFCcmgifQ==">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0c284c;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #c99d4f;
+        }
+      
+       .federo-regular {
+            font-family: "Federo", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+      
+        .header {
+            text-align: center;
+            font-family: Federo;
+            margin-bottom: 30px;
+            color: #c99d4f;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .btn-mode {
+            background: rgba(255,255,255,0.9);
+            color: #667eea;
+        }
+
+	.btn-mode.active {
+	    background: #c99d4f;
+	    color: white;
+	}
+
+        .btn-nav {
+            background: rgba(255,255,255,0.8);
+            color: #333;
+        }
+
+        .btn-shuffle {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .card-container {
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            width: 400px;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+            cursor: pointer;
+            margin: 0 auto;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            color: #0c284c;
+        }
+
+	.card-back {
+	    background: linear-gradient(135deg, #c99d4f 0%, #b8924a 100%);
+	    color: #0c284c;
+	    transform: rotateY(180deg);
+	}
+
+        .company-name {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .service-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #FFD700;
+        }
+
+        .service-type {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #FFFFFF;
+        }
+
+        .value-prop {
+            font-size: 1rem;
+            line-height: 1.5;
+            opacity: 0.9;
+        }
+
+        .counter {
+            color: #c99d4f;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .instructions {
+            color: #c99d4f;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 480px) {
+            .card {
+                width: 350px;
+                height: 280px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 200px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Partners Flashcards</h1>
+        <p>Learn about our partner companies and services</p>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-mode active" id="companyMode">Company → Service</button>
+        <button class="btn btn-mode" id="serviceMode">Service → Companies</button>
+    </div>
+
+    <div class="counter" id="counter">Card 1 of 15</div>
+
+    <div class="card-container">
+        <div class="card" id="flashcard">
+            <div class="card-face card-front" id="cardFront">
+                <div class="company-name" id="frontContent">Click to start</div>
+            </div>
+            <div class="card-face card-back" id="cardBack">
+                <div class="service-name" id="backService"></div>
+                <div class="value-prop" id="backContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-nav" id="prevBtn">← Previous</button>
+        <button class="btn btn-nav" id="nextBtn">Next →</button>
+    </div>
+
+    <div class="instructions">
+        Click the card to flip it, or use the navigation buttons
+    </div>
+
+    <script>
+        // Company data
+        const companies = [
+            {
+                name: "Airoso & Simetrico",
+                service: "Interior Design",
+                valueProposition: "Tailored interior design, renovation, and staging solutions to optimise space when preparing for property sale, rental, or personal living. They can help with upgrading bathrooms and kitchens including design, layout, plumbing, tiling, and fixtures whether for modernisation or accessibility needs."
+            },
+            {
+                name: "Arnold & Baldwin",
+                service: "Chartered surveyors",
+                valueProposition: "A detailed property inspection by a certified RICS surveyor to assess condition, highlight issues, and support informed purchasing or renovation decisions. This is an essential part of the conveyancing process for buyers."
+            },
+            {
+                name: "Cadogan Tate",
+                service: "Removals and Storage",
+                valueProposition: "International high-end moving, storage and shipping service that is known for dealing with valuable belongings and has served the world's top collectors, galleries, museums, auction houses, and interior designers."
+            },
+            {
+                name: "Connectere",
+                service: "Solicitor Panel",
+                valueProposition: "A solicitors panel that provides a wide and comprehensive range of legal support for clients during the conveyancing process, including drafting contracts, managing title transfers, and ensuring all legal conditions are met from offer to completion."
+            },
+            {
+                name: "Cousins and Cousins",
+                service: "Architects",
+                valueProposition: "Award-winning architecture and design studio for £2-5m projects, that also provides project planning and compliance consultancy services."
+            },
+            {
+                name: "Druce Property Management",
+                service: "Property Management",
+                valueProposition: "One point of contact with a team of experts offering stress-free tenant relationship management, 24/7 maintenance, rent collection, arrears chasing, deposit negotiation, and full compliance support including safety checks, inspections, and HMO licensing guidance."
+            },
+            {
+                name: "Equals Money",
+                service: "Foreign Exchange",
+                valueProposition: "Specialist foreign exchange services for clients transferring large sums internationally at a lower cost than client banks. Ideal for overseas purchases, investments, or relocation."
+            },
+            {
+                name: "Gerald Edelman",
+                service: "Tax and Accountancy",
+                valueProposition: "Tailored tax planning to help with long-term financial goals, such as capital gains and inheritance tax advice, compliance and mitigating liabilities, investing and financing, and optimising ownership structures."
+            },
+            {
+                name: "Go2Removals",
+                service: "Removals and Storage",
+                valueProposition: "Domestic home or office moves across the UK, including packing, transport, and optional unpacking services. Fully managed removals from the UK to Europe or vice versa, including customs coordination, logistics, and cross-border transport."
+            },
+            {
+                name: "Harc Solutions",
+                service: "Cleaning",
+                valueProposition: "Thorough one-off deep clean services for tenant move-ins and move-outs, or other spring clean events."
+            },
+            {
+                name: "Howden",
+                service: "Insurance",
+                valueProposition: "Name it and they'll insure it. They can offer financial protection for homes and belongings against risks like fire, theft, and accidental damage. They also provide landlord and rental insurance, as well as life insurance. Pet, jewellery, and boat insurance are other common products they advise and offer on."
+            },
+            {
+                name: "LXM",
+                service: "Chartered surveyors",
+                valueProposition: "Extensive building and decorating services that include plumbing, tiling, fixture and soft furnishing installation, painting, house clearance and waste disposal, general repairs and maintenance, along with support with safety and compliance reports and certification."
+            },
+            {
+                name: "Loft",
+                service: "Furniture",
+                valueProposition: "Full furnishing solutions, typically for rental properties, staging, replenishment, and first-time buyers due to their affordability and fast turnaround - delivery and installation within a few working days."
+            },
+            {
+                name: "Prestige Private Finance",
+                service: "Mortgage Broker",
+                valueProposition: "Specialist mortgage advice for first-time buyers navigating the property market, including affordability assessments, lender options, and support through the application process."
+            },
+            {
+                name: "Vesta",
+                service: "Furniture",
+                valueProposition: "Curated full-furniture packs that are perfect for renting, staging, or buying outright. Vesta find a good balance between comfort, style, and affordability, but they can still create bespoke solutions and furniture pieces."
+            }
+        ];
+
+        // Group companies by service for service mode
+        function groupByService() {
+            const serviceGroups = {};
+            companies.forEach(company => {
+                if (!serviceGroups[company.service]) {
+                    serviceGroups[company.service] = [];
+                }
+                serviceGroups[company.service].push(company.name);
+            });
+            return Object.keys(serviceGroups).map(service => ({
+                service: service,
+                companies: serviceGroups[service]
+            }));
+        }
+
+        // App state
+        let currentMode = 'company'; // 'company' or 'service'
+        let currentIndex = 0;
+        let isFlipped = false;
+        let currentData = companies;
+        const serviceData = groupByService();
+	let autoFlipTimeout;
+
+        // DOM elements
+        const flashcard = document.getElementById('flashcard');
+        const frontContent = document.getElementById('frontContent');
+        const backService = document.getElementById('backService');
+        const backContent = document.getElementById('backContent');
+        const counter = document.getElementById('counter');
+        const companyModeBtn = document.getElementById('companyMode');
+        const serviceModeBtn = document.getElementById('serviceMode');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        // Initialize app
+        function init() {
+            // Shuffle cards automatically on page load
+            currentData = shuffleArray(companies);
+            updateCard();
+            updateCounter();
+        }
+
+	// Update card content
+	function updateCard() {
+	    resetFlip();
+    
+	    // Auto-flip back after 3 seconds if card is flipped
+	    if (autoFlipTimeout) {
+	        clearTimeout(autoFlipTimeout);
+	    }
+    
+	if (currentMode === 'company') {
+	    const company = currentData[currentIndex];
+	    frontContent.innerHTML = `<div class="company-name">${company.name}</div>`;
+	    backService.innerHTML = `<div class="service-name" style="color: #0c284c;">${company.service}</div>`;
+	    backContent.innerHTML = `<div class="value-prop" style="color: #0c284c;">${company.valueProposition}</div>`;
+	} else {
+	    const serviceGroup = currentData[currentIndex];
+	    frontContent.innerHTML = `<div class="service-name">${serviceGroup.service}</div>`;
+	    backService.innerHTML = `<div class="service-name" style="color: #0c284c;">Companies:</div>`;
+	    backContent.innerHTML = serviceGroup.companies.map(company => 
+	        `<div style="margin: 8px 0; font-weight: 600; color: #0c284c;">${company}</div>`
+	    ).join('');
+	}
+	}
+
+        // Update counter
+        function updateCounter() {
+            counter.textContent = `Card ${currentIndex + 1} of 	${currentData.length}`;
+        }
+
+        // Reset card flip
+        function resetFlip() {
+            flashcard.classList.remove('flipped');
+            isFlipped = false;
+        }
+
+        // Shuffle array
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // Event listeners
+	flashcard.addEventListener('click', () => {
+	    flashcard.classList.toggle('flipped');
+	    isFlipped = !isFlipped;
+    
+	    // Clear any existing timeout
+	    if (autoFlipTimeout) {
+	        clearTimeout(autoFlipTimeout);
+	    }
+    
+	    // Set auto-flip back after 3 seconds if card is flipped
+	    if (isFlipped) {
+	        autoFlipTimeout = setTimeout(() => {
+	            flashcard.classList.remove('flipped');
+	            isFlipped = false;
+	        }, 3000);
+	    }
+	});
+
+        companyModeBtn.addEventListener('click', () => {
+            if (currentMode !== 'company') {
+                currentMode = 'company';
+                currentData = shuffleArray(companies);
+                currentIndex = 0;
+                companyModeBtn.classList.add('active');
+                serviceModeBtn.classList.remove('active');
+                updateCard();
+                updateCounter();
+            }
+        });
+
+        serviceModeBtn.addEventListener('click', () => {
+            if (currentMode !== 'service') {
+                currentMode = 'service';
+                currentData = shuffleArray(serviceData);
+                currentIndex = 0;
+                serviceModeBtn.classList.add('active');
+                companyModeBtn.classList.remove('active');
+                updateCard();
+                updateCounter();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + currentData.length) % currentData.length;
+            updateCard();
+            updateCounter();
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % currentData.length;
+            updateCard();
+            updateCounter();
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            switch(e.key) {
+                case 'ArrowLeft':
+                    prevBtn.click();
+                    break;
+                case 'ArrowRight':
+                    nextBtn.click();
+                    break;
+                case ' ':
+                    e.preventDefault();
+                    flashcard.click();
+                    break;
+            }
+        });
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swCode = `
+                    const CACHE_NAME = 'partners-flashcards-v1';
+                    const urlsToCache = ['/'];
+                    
+                    self.addEventListener('install', event => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then(cache => cache.addAll(urlsToCache))
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then(response => response || fetch(event.request))
+                        );
+                    });
+                `;
+                
+                const swBlob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(swBlob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then(() => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed'));
+            });
+        }
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
